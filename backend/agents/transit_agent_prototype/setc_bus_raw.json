@@ -1,0 +1,305 @@
+﻿{
+    "index_name": "1f10d3eb-a425-4246-8800-3f72bf7ad2b0",
+    "title": "SETC Bus Routes, Types, Services and Timings",
+    "desc": "SETC Bus Routes, Types, Services and Timings",
+    "org_type": "State",
+    "org": [
+        "Tamil Nadu",
+        "Transport Department, Tamil Nadu"
+    ],
+    "sector": [
+        "Transport",
+        "Road Transport"
+    ],
+    "source": "tn.data.gov.in",
+    "catalog_uuid": "f74d86d6-91b6-4de2-9580-e7f89a1d4679",
+    "visualizable": "1",
+    "active": "1",
+    "created": 1538567538,
+    "updated": 1543521451,
+    "created_date": "2018-10-03T17:22:18Z",
+    "updated_date": "2018-11-30T01:27:31Z",
+    "target_bucket": {
+        "index": "tn_api",
+        "type": "f74d86d6-91b6-4de2-9580-e7f89a1d4679",
+        "field": "1f10d3eb-a425-4246-8800-3f72bf7ad2b0"
+    },
+    "field": [
+        {
+            "id": "sl__no_",
+            "name": "Sl. No.",
+            "type": "double"
+        },
+        {
+            "id": "depot",
+            "name": "Depot",
+            "type": "keyword"
+        },
+        {
+            "id": "route_no_",
+            "name": "Route No.",
+            "type": "keyword"
+        },
+        {
+            "id": "from",
+            "name": "From",
+            "type": "keyword"
+        },
+        {
+            "id": "to",
+            "name": "To",
+            "type": "keyword"
+        },
+        {
+            "id": "route_length",
+            "name": "Route Length",
+            "type": "double"
+        },
+        {
+            "id": "type",
+            "name": "Type",
+            "type": "keyword"
+        },
+        {
+            "id": "no_of_service",
+            "name": "No.of Service",
+            "type": "double"
+        },
+        {
+            "id": "departure_timings",
+            "name": "Departure Timings",
+            "type": "keyword"
+        }
+    ],
+    "external_ws_url": "",
+    "external_ws": "0",
+    "message": "Resource lists",
+    "version": "2.2.0",
+    "status": "ok",
+    "total": 549,
+    "count": 20,
+    "limit": "20",
+    "offset": "0",
+    "records": [
+        {
+            "sl__no_": "1",
+            "depot": "SHN",
+            "route_no_": "192UD",
+            "from": "ALANKULAM",
+            "to": "CHENNAI",
+            "route_length": "657",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "17.45"
+        },
+        {
+            "sl__no_": "2",
+            "depot": "TRY",
+            "route_no_": "127UD",
+            "from": "ANNAVASAL",
+            "to": "CHENNAI",
+            "route_length": "384",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "21.3"
+        },
+        {
+            "sl__no_": "3",
+            "depot": "CBE",
+            "route_no_": "479UD",
+            "from": "ARANI",
+            "to": "COIMBATORE",
+            "route_length": "394",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "21"
+        },
+        {
+            "sl__no_": "4",
+            "depot": "CB",
+            "route_no_": "131UD",
+            "from": "ARANTHANGI",
+            "to": "CHENNAI",
+            "route_length": "417",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "20.3"
+        },
+        {
+            "sl__no_": "5",
+            "depot": "KKDI",
+            "route_no_": "126AU",
+            "from": "ARIMALAM",
+            "to": "CHENNAI",
+            "route_length": "403",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "19.15"
+        },
+        {
+            "sl__no_": "6",
+            "depot": "TCN",
+            "route_no_": "170AU",
+            "from": "ARUPPUKOTTAI",
+            "to": "CHENNAI",
+            "route_length": "511",
+            "type": "ULTRA",
+            "no_of_service": "2",
+            "departure_timings": "19.00,20.00"
+        },
+        {
+            "sl__no_": "7",
+            "depot": "PDY",
+            "route_no_": "145UD",
+            "from": "AVUDAIYAR KOIL",
+            "to": "CHENNAI",
+            "route_length": "431",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "20"
+        },
+        {
+            "sl__no_": "8",
+            "depot": "CC",
+            "route_no_": "965UD",
+            "from": "AVUDAIYAR KOIL",
+            "to": "TIRUPATHI",
+            "route_length": "494",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "19"
+        },
+        {
+            "sl__no_": "9",
+            "depot": "DGL",
+            "route_no_": "875BU",
+            "from": "BANGALORE",
+            "to": "BODI",
+            "route_length": "481",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "20.15"
+        },
+        {
+            "sl__no_": "10",
+            "depot": "CC",
+            "route_no_": "628UD",
+            "from": "BANGALORE",
+            "to": "CHENNAI (Via Chittoor)",
+            "route_length": "361",
+            "type": "ULTRA",
+            "no_of_service": "5",
+            "departure_timings": "07.30,08.00,10.30,22.30,23.00"
+        },
+        {
+            "sl__no_": "11",
+            "depot": "HSR",
+            "route_no_": "831UD",
+            "from": "BANGALORE",
+            "to": "CHENNAI (Via Vellore)",
+            "route_length": "360",
+            "type": "ULTRA",
+            "no_of_service": "39",
+            "departure_timings": "04.30,05.00,05.30,07.00,07.30, 09.00,09.30,10.00,10.15,10.45, 11.30,13.00,14.30,16.00,16.30, 17.00,18.30,19.00,19.15,19.30, 20.00,20.15,20.30,20.45,21.00, 21.15,21.25,21.30,21.35,21.45, 22.01,22.15,22.30,22.45,22.50, 23.01,23.15,23.30,23.45"
+        },
+        {
+            "sl__no_": "12",
+            "depot": "CC",
+            "route_no_": "843CU",
+            "from": "BANGALORE",
+            "to": "CHIDAMBARAM",
+            "route_length": "377",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "22.15"
+        },
+        {
+            "sl__no_": "13",
+            "depot": "CBE",
+            "route_no_": "838UD",
+            "from": "BANGALORE",
+            "to": "COIMBATORE",
+            "route_length": "377",
+            "type": "ULTRA",
+            "no_of_service": "8",
+            "departure_timings": "08.30,09.00,10.00,20.30,21.15, 22.00,22.30,22.45,"
+        },
+        {
+            "sl__no_": "14",
+            "depot": "MDU",
+            "route_no_": "875UD",
+            "from": "BANGALORE",
+            "to": "CUMBAM",
+            "route_length": "503",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "19.45"
+        },
+        {
+            "sl__no_": "15",
+            "depot": "CC",
+            "route_no_": "834UD",
+            "from": "BANGALORE",
+            "to": "KALPAKKAM",
+            "route_length": "349",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "21.3"
+        },
+        {
+            "sl__no_": "16",
+            "depot": "KKD",
+            "route_no_": "888UD",
+            "from": "BANGALORE",
+            "to": "KANYAKUMARI",
+            "route_length": "720",
+            "type": "ULTRA",
+            "no_of_service": "2",
+            "departure_timings": "14.00,18.45"
+        },
+        {
+            "sl__no_": "17",
+            "depot": "KKDI",
+            "route_no_": "857UD",
+            "from": "BANGALORE",
+            "to": "KARAIKUDI",
+            "route_length": "449",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "20"
+        },
+        {
+            "sl__no_": "18",
+            "depot": "KKM",
+            "route_no_": "843TU",
+            "from": "BANGALORE",
+            "to": "KUMBAKONAM",
+            "route_length": "467",
+            "type": "ULTRA",
+            "no_of_service": "1",
+            "departure_timings": "19.3"
+        },
+        {
+            "sl__no_": "19",
+            "depot": "KKM",
+            "route_no_": "844UD",
+            "from": "BANGALORE",
+            "to": "KUMBAKONAM",
+            "route_length": "438",
+            "type": "ULTRA",
+            "no_of_service": "2",
+            "departure_timings": "19.45,20.15"
+        },
+        {
+            "sl__no_": "20",
+            "depot": "MDU",
+            "route_no_": "846UD",
+            "from": "BANGALORE",
+            "to": "MADURAI",
+            "route_length": "461",
+            "type": "ULTRA",
+            "no_of_service": "7",
+            "departure_timings": "07.15,19.30,20.00,20.30,21.30, 22.00,22.30,"
+        }
+    ]
+}

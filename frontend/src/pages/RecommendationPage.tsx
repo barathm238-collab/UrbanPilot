@@ -1,8 +1,10 @@
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, BadgeCheck, BatteryCharging, Clock3, Coins, Footprints, Leaf, Route, Sparkles } from 'lucide-react'
+import { AlertTriangle, ArrowRight, BadgeCheck, BatteryCharging, Bike, CloudRain, Clock3, Coins, Footprints, Gauge, Leaf, Loader2, Navigation, Route, Sparkles, Thermometer, TrainFront } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { GlassCard } from '../components/ui/GlassCard'
 import { Timeline } from '../components/ui/Timeline'
+import { analyzeEnvironment, type EnvironmentAnalyzeResponse } from '../services/environmentService'
 import { journeyTimeline } from '../services/mockData'
 import { useRouteStore } from "../store/routeStore";
 
@@ -27,7 +29,138 @@ const metrics = (recommended: any) => [
   },
 ];
 
+const defaultEnvironmentPayload = {
+  origin: {
+    lat: 11.0168,
+    lng: 76.9558,
+  },
+  destination: {
+    lat: 10.998,
+    lng: 76.97,
+  },
+  departureTime: '2026-07-30T09:00:00',
+}
+
+function ImpactStat({ label, value }: { label: string; value: string | number }) {
+  return (
+    <div className="rounded-[20px] border border-white/10 bg-white/[0.045] p-3">
+      <p className="text-xs uppercase tracking-[0.18em] text-slate-500">{label}</p>
+      <p className="mt-2 text-lg font-bold text-white">{value}</p>
+    </div>
+  )
+}
+
+function EnvironmentLoading() {
+  return (
+    <GlassCard className="p-5 sm:p-6">
+      <div className="flex min-h-[220px] items-center justify-center">
+        <div className="text-center">
+          <Loader2 className="mx-auto animate-spin text-cyan-300" size={34} />
+          <p className="mt-4 text-sm font-semibold text-white">Reading weather and traffic signals</p>
+          <div className="mt-4 flex justify-center gap-2">
+            {[0, 1, 2].map((item) => (
+              <motion.span
+                key={item}
+                animate={{ opacity: [0.25, 1, 0.25], y: [0, -5, 0] }}
+                transition={{ duration: 1.1, repeat: Infinity, delay: item * 0.16 }}
+                className="h-2 w-2 rounded-full bg-cyan-300"
+              />
+            ))}
+          </div>
+        </div>
+      </div>
+    </GlassCard>
+  )
+}
+
+function EnvironmentError({ message, onRetry }: { message: string; onRetry: () => void }) {
+  return (
+    <GlassCard className="p-5 sm:p-6">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-rose-400/25 bg-rose-400/10 text-rose-300">
+            <AlertTriangle size={21} />
+          </div>
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Environment</p>
+            <h2 className="mt-2 text-[24px] font-semibold text-white">Signal unavailable</h2>
+            <p className="mt-2 text-sm leading-6 text-slate-400">{message}</p>
+          </div>
+        </div>
+        <button type="button" onClick={onRetry} className="rounded-full border border-white/10 bg-white/[0.06] px-5 py-3 text-sm font-bold text-white transition hover:border-cyan-300/40 hover:bg-cyan-300/10">
+          Retry
+        </button>
+      </div>
+    </GlassCard>
+  )
+}
+
+function EnvironmentCards({ analysis }: { analysis: EnvironmentAnalyzeResponse }) {
+  return (
+    <section className="grid gap-6 lg:grid-cols-12">
+      <GlassCard className="p-5 sm:p-6 lg:col-span-4">
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Weather</p>
+            <h2 className="mt-2 text-[24px] font-semibold text-white">{analysis.weather.condition}</h2>
+          </div>
+          <CloudRain className="text-cyan-300" size={24} />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+          <ImpactStat label="Temperature" value={`${analysis.weather.temperature} C`} />
+          <ImpactStat label="Humidity" value={`${analysis.weather.humidity}%`} />
+          <ImpactStat label="Wind" value={`${analysis.weather.windSpeed} km/h`} />
+        </div>
+        {analysis.weather.description ? (
+          <p className="mt-4 flex items-center gap-2 text-sm text-slate-400">
+            <Thermometer size={15} className="text-cyan-300" />
+            {analysis.weather.description}
+          </p>
+        ) : null}
+      </GlassCard>
+
+      <GlassCard className="p-5 sm:p-6 lg:col-span-4">
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Traffic</p>
+            <h2 className="mt-2 text-[24px] font-semibold text-white">{analysis.traffic.level}</h2>
+          </div>
+          <Gauge className="text-amber-300" size={24} />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3 lg:grid-cols-1">
+          <ImpactStat label="Delay" value={`${analysis.traffic.delayMinutes} min`} />
+          <ImpactStat label="Avg Speed" value={`${analysis.traffic.averageSpeed} km/h`} />
+          <ImpactStat label="Incidents" value={analysis.traffic.roadIncidents?.length ?? 0} />
+        </div>
+      </GlassCard>
+
+      <GlassCard className="p-5 sm:p-6 lg:col-span-4">
+        <div className="mb-5 flex items-center justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.3em] text-slate-500">Travel Impact</p>
+            <h2 className="mt-2 text-[24px] font-semibold text-white">Comfort forecast</h2>
+          </div>
+          <Navigation className="text-emerald-300" size={24} />
+        </div>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <ImpactStat label="Walking" value={analysis.travelImpact.walkingComfort} />
+          <ImpactStat label="Bike" value={analysis.travelImpact.bikeComfort} />
+        </div>
+        <div className="mt-4 rounded-[24px] border border-emerald-400/20 bg-emerald-400/10 p-4">
+          <div className="flex items-center gap-3 text-emerald-300">
+            {analysis.travelImpact.recommendedTransport.toLowerCase() === 'bike' ? <Bike size={19} /> : <TrainFront size={19} />}
+            <p className="text-sm font-semibold">Recommended Transport</p>
+          </div>
+          <p className="mt-2 text-3xl font-bold text-white">{analysis.travelImpact.recommendedTransport}</p>
+          <p className="mt-3 text-sm leading-6 text-slate-300">{analysis.travelImpact.reason}</p>
+        </div>
+      </GlassCard>
+    </section>
+  )
+}
+
 export function RecommendationPage() {
+<<<<<<< HEAD
   const routeOptionsResult = useRouteStore(
   (state) => state.routeOptionsResult
 ) as any;
@@ -37,6 +170,31 @@ const options = routeOptionsResult?.options ?? [];
 const recommended =
   options.find((o: any) => o.recommended) ??
   options[0];
+=======
+  const [environmentAnalysis, setEnvironmentAnalysis] = useState<EnvironmentAnalyzeResponse | null>(null)
+  const [environmentError, setEnvironmentError] = useState<string | null>(null)
+  const [environmentLoading, setEnvironmentLoading] = useState(true)
+
+  const loadEnvironmentAnalysis = async () => {
+    setEnvironmentLoading(true)
+    setEnvironmentError(null)
+
+    try {
+      const result = await analyzeEnvironment(defaultEnvironmentPayload)
+      setEnvironmentAnalysis(result)
+    } catch (error) {
+      setEnvironmentAnalysis(null)
+      setEnvironmentError(error instanceof Error ? error.message : 'Environmental intelligence is unavailable.')
+    } finally {
+      setEnvironmentLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    void loadEnvironmentAnalysis()
+  }, [])
+
+>>>>>>> 8de0c6751caba22706940708722dd6ad1f6c7be8
   return (
     <div className="space-y-8">
       <section className="grid gap-8 lg:grid-cols-12 lg:items-stretch">
@@ -92,6 +250,14 @@ const recommended =
           </GlassCard>
         </motion.div>
       </section>
+
+      {environmentLoading ? (
+        <EnvironmentLoading />
+      ) : environmentError ? (
+        <EnvironmentError message={environmentError} onRetry={loadEnvironmentAnalysis} />
+      ) : environmentAnalysis ? (
+        <EnvironmentCards analysis={environmentAnalysis} />
+      ) : null}
 
       <section className="grid gap-6 lg:grid-cols-12">
         <GlassCard className="p-5 sm:p-6 lg:col-span-5">

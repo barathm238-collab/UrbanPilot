@@ -6,6 +6,11 @@ pydantic>=2.0.0
 
 # HTTP calls to Nominatim / Overpass
 requests>=2.31.0
+httpx>=0.27.0
+
+# FastAPI route layer
+fastapi>=0.115.0
+uvicorn>=0.30.0
 
 # WhatsApp webhook layer (teammate's side)
 flask>=3.0.0
@@ -16,3 +21,4 @@ python-dotenv>=1.0.0
 
 # Testing
 pytest>=8.0.0
+pytest-asyncio>=0.21.0

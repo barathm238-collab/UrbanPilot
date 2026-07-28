@@ -13,7 +13,10 @@ benchmark — delivered over WhatsApp.
 | 2. Public Transit Agent ("The Metro Expert") | 🔲 Stub only (`backend/agents/transit_agent.py`) |
 | 3. Open Mobility Agent ("The Negotiator") | 🔲 Stub only (`backend/agents/mobility_agent.py`) |
 | 4. Synthesis & Arbitrage Agent ("The Brain") | 🔲 Stub only (`backend/agents/synthesis_agent.py`) |
+| Environmental Intelligence Agent | ✅ Built (`backend/agents/environmental_agent.py`) |
 | WhatsApp UI (Twilio webhook) | ✅ Built — see below |
+| Frontend (Vite + React + TypeScript) | ✅ Built |
+| FastAPI Backend | ✅ Built (`backend/main.py`) |
 
 ## Team split
 
@@ -35,43 +38,73 @@ returns a dict shaped like `GeoAgentState`.
 
 ```bash
 cd backend
-python3 -m venv venv
+python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env          # fill in GOOGLE_API_KEY / Twilio creds as needed
 
-# Agent developer: sanity check the agent alone
-python -m tests.test_geographic_agent
+# Start all backend services (FastAPI + Flask webhook)
+# Windows:
+powershell -ExecutionPolicy Bypass -File scripts\start_dev.ps1
+# Or individually:
+# uvicorn backend.main:app --reload --port 8000
+# python webhook/app.py
+```
 
-# UI developer: run the webhook (needs ngrok + Twilio sandbox — see docs/02)
-python webhook/app.py
+```bash
+# Frontend (in a separate terminal)
+cd frontend
+npm install
+npm run dev
 ```
 
 ## File structure
 
 ```
-transit-swarm/
+UrbanPilot/
 ├── README.md
 ├── docs/
 │   ├── 00_project_overview.md
 │   ├── 01_guidebook_geographic_agent.md
 │   └── 02_guidebook_whatsapp_ui.md
-└── backend/
-    ├── requirements.txt
-    ├── .env.example
-    ├── core/
-    │   └── schema.py            # <- THE CONTRACT. Read this first.
-    ├── agents/
-    │   ├── geographic_agent.py  # ✅ Agent 1 — built
-    │   ├── transit_agent.py     # 🔲 Agent 2 — stub
-    │   ├── mobility_agent.py    # 🔲 Agent 3 — stub
-    │   └── synthesis_agent.py   # 🔲 Agent 4 — stub
-    ├── tools/
-    │   ├── geocode_tool.py      # Nominatim wrapper
-    │   └── transit_hub_tool.py  # Overpass wrapper + distance calc
-    ├── webhook/
-    │   ├── app.py               # Flask + Twilio webhook
-    │   └── formatter.py         # dict -> WhatsApp text
-    └── tests/
-        └── test_geographic_agent.py
+├── scripts/
+│   └── start_dev.ps1          # starts FastAPI + Flask webhook
+├── backend/
+│   ├── requirements.txt
+│   ├── .env.example
+│   ├── .env
+│   ├── main.py                # FastAPI entrypoint (/api/environment/*)
+│   ├── agents/
+│   │   ├── environmental_agent.py
+│   │   ├── geographic_agent.py
+│   │   ├── transit_agent.py
+│   │   ├── mobility_agent.py
+│   │   └── synthesis_agent.py
+│   ├── tools/
+│   │   ├── weather_tool.py
+│   │   ├── traffic_tool.py
+│   │   ├── impact_calculator.py
+│   │   ├── geocode_tool.py
+│   │   └── transit_hub_tool.py
+│   ├── routes/
+│   │   └── environment_routes.py
+│   ├── webhook/
+│   │   ├── app.py             # Flask + Twilio webhook (port 5000)
+│   │   └── formatter.py
+│   └── tests/
+│       └── test_geographic_agent.py
+└── frontend/
+    ├── vite.config.ts         # proxy /api → 127.0.0.1:8000
+    ├── src/
+    │   ├── services/
+    │   │   ├── apiClient.ts
+    │   │   └── environmentService.ts
+    │   ├── pages/
+    │   │   ├── HomePage.tsx
+    │   │   └── RecommendationPage.tsx
+    │   └── components/
+    │       ├── WeatherCard.tsx
+    │       ├── TrafficCard.tsx
+    │       └── RecommendationCard.tsx
+    └── package.json
 ```
