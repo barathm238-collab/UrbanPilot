@@ -14,6 +14,7 @@ from flask import Flask, request, jsonify
 from twilio.twiml.messaging_response import MessagingResponse
 
 from backend.agents.geographic_agent import run_geographic_agent
+from backend.agents.route_options_agent import generate_route_options
 from backend.webhook.formatter import format_whatsapp_reply
 from flask_cors import CORS
 
@@ -45,6 +46,25 @@ def geographic_api():
 
     try:
         result = run_geographic_agent(message)
+
+        return jsonify({"success": True, "result": result})
+
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@app.route("/api/route-options", methods=["POST"])
+def route_options_api():
+
+    data = request.get_json()
+
+    geo_result = data.get("geo")
+
+    if not geo_result:
+        return jsonify({"success": False, "error": "GeoAgentState is required"}), 400
+
+    try:
+        result = generate_route_options(geo_result)
 
         return jsonify({"success": True, "result": result})
 

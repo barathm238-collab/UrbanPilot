@@ -62,14 +62,19 @@ function AgentCard({ agent, index }: { agent: (typeof agentSteps)[number]; index
 export function ProcessingPage() {
 
   const geographicResult = useRouteStore(
-    (state) => state.geographicResult
-  )
+  (state) => state.geographicResult
+)
+
+const routeOptionsResult = useRouteStore(
+  (state) => state.routeOptionsResult
+)
   const result = geographicResult as {
   origin_text?: string
   destination_text?: string
 }
 
   console.log("Geographic Result:", geographicResult)
+  console.log("Route Options Result:", routeOptionsResult)
 
   return (
   <div className="space-y-8">

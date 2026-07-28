@@ -1,18 +1,37 @@
-"""
-agents/transit_agent.py
+from backend.core.schema import RouteOptionsState
+from backend.tools.transit_tools import (
+    get_fare,
+    get_duration,
+    get_live_status,
+)
 
-Agent 2: The Public Transit Agent ("The Metro Expert") — NOT BUILT YET.
 
-Planned job: given the nearest_stations found by the Geographic Agent,
-query a GTFS (General Transit Feed Specification) dataset loaded into a
-SQL DB to compute middle-mile transit time, schedules, and fixed fares
-between two stations.
+def run_transit_agent(
+    state: RouteOptionsState,
+) -> RouteOptionsState:
+    try:
+        for option in state["options"]:
+            for leg in option["legs"]:
 
-Planned input:  GeoAgentState (specifically origin/destination nearest_stations)
-Planned output: {"transit_time_min": int, "fare_rupees": float, "schedule": [...]}
+                if leg["needs_pricing_from"] != "transit_agent":
+                    continue
 
-Build this after Agent 1 is reviewed and working end-to-end.
-"""
+                leg["fare_rupees"] = get_fare(
+                    leg["mode"],
+                    leg["distance_km"],
+                )
 
-def run_transit_agent(origin_station: dict, destination_station: dict) -> dict:
-    raise NotImplementedError("Agent 2 is planned for the next milestone.")
+                leg["duration_min"] = get_duration(
+                    leg["mode"],
+                    leg["distance_km"],
+                )
+
+                live = get_live_status(leg["mode"])
+
+                leg["delay_min"] = live["delay_minutes"]
+
+        return state
+
+    except Exception as e:
+        state["error"] = str(e)
+        return state

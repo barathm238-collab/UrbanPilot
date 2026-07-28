@@ -17,3 +17,21 @@ export async function runGeographicAgent(message: string) {
 
   return await response.json();
 }
+
+export async function runRouteOptionsAgent(geo: unknown) {
+  const response = await fetch(`${BASE_URL}/api/route-options`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      geo,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error("Route Options request failed");
+  }
+
+  return await response.json();
+}

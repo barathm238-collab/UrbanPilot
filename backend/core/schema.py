@@ -17,6 +17,7 @@ from typing import TypedDict, Optional, List
 
 class StationInfo(TypedDict):
     """One nearby metro/transit station."""
+
     name: str
     lat: float
     lon: float
@@ -25,8 +26,9 @@ class StationInfo(TypedDict):
 
 class LocationGeo(TypedDict):
     """Everything we know about one point (an origin or a destination)."""
-    input_text: str              # what the user typed, e.g. "Anna Nagar"
-    display_name: str            # what Nominatim resolved it to (full address)
+
+    input_text: str  # what the user typed, e.g. "Anna Nagar"
+    display_name: str  # what Nominatim resolved it to (full address)
     lat: float
     lon: float
     nearest_stations: List[StationInfo]
@@ -40,9 +42,62 @@ class GeoAgentState(TypedDict):
     Your teammate's webhook handler will receive this dict and format it
     into a WhatsApp message — nothing more, nothing less.
     """
+
     user_message: str
     origin_text: Optional[str]
     destination_text: Optional[str]
     origin: Optional[LocationGeo]
     destination: Optional[LocationGeo]
     error: Optional[str]
+
+
+# ---------------------------------------------------------------------------
+# Added for the 6-agent architecture (Agents 2-6). GeoAgentState above is
+# untouched.
+# ---------------------------------------------------------------------------
+
+from typing import Literal
+
+Mode = Literal["walk", "metro", "bus", "auto", "cab"]
+
+PricingOwner = Literal["transit_agent", "mobility_agent", None]
+
+
+class RouteLeg(TypedDict):
+    mode: Mode
+    from_name: str
+    to_name: str
+    from_lat: float
+    from_lon: float
+    to_lat: float
+    to_lon: float
+    distance_km: Optional[float]
+    duration_min: Optional[float]
+    fare_rupees: Optional[float]
+    line_or_service: Optional[str]
+    delay_min: Optional[float]
+    needs_pricing_from: PricingOwner
+
+
+class RouteOption(TypedDict):
+    id: str
+    label: str
+    legs: List[RouteLeg]
+    total_cost_rupees: Optional[float]
+    total_duration_min: Optional[float]
+    safety_score: Optional[float]
+    recommended: bool
+
+
+class RouteOptionsState(TypedDict):
+    geo: GeoAgentState
+    weather_traffic: Optional[dict]
+    options: List[RouteOption]
+    error: Optional[str]
+
+
+class WeatherTrafficResult(TypedDict):
+    condition: str
+    temperature_c: float
+    is_raining: bool
+    congestion_factor: float

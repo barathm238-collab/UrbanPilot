@@ -5,7 +5,7 @@ import { GlassCard } from '../components/ui/GlassCard'
 import { JourneyCard } from '../components/ui/JourneyCard'
 import { recentTrips, savedPlaces, trafficOverview } from '../services/mockData'
 import { useState } from 'react'
-import { runGeographicAgent } from '../services/api'
+import { runGeographicAgent, runRouteOptionsAgent } from '../services/api'
 import { useRouteStore } from '../store/routeStore'
 
 const preferenceChips = ['Cheapest', 'Fastest', 'Balanced', 'Luxury', 'Eco']
@@ -21,7 +21,11 @@ function SearchCard() {
 
   const navigate = useNavigate()
 
-  const { setQuery, setGeographicResult } = useRouteStore()
+  const {
+  setQuery,
+  setGeographicResult,
+  setRouteOptionsResult,
+} = useRouteStore()
 
   const [origin, setOrigin] = useState('North Loop, Sector 12')
 
@@ -30,33 +34,43 @@ function SearchCard() {
   const [loading, setLoading] = useState(false)
 
   async function handleSearch() {
-    try {
-      setLoading(true)
+  try {
+    setLoading(true)
 
-      const message = `I need to go from ${origin} to ${destination}`
+    const message = `I need to go from ${origin} to ${destination}`
 
-      setQuery(message)
+    setQuery(message)
 
-      const response = await runGeographicAgent(message)
+    // Agent 1
+    const geoResponse = await runGeographicAgent(message)
 
-      console.log(response)
+    console.log("Geographic:", geoResponse)
 
-      setGeographicResult(response.result)
+    setGeographicResult(geoResponse.result)
 
-      navigate('/processing')
+    // Agent 2
+    const routeResponse = await runRouteOptionsAgent(
+      geoResponse.result
+    )
 
-    } catch (err) {
+    console.log("Route Options:", routeResponse)
 
-      console.error(err)
+    setRouteOptionsResult(routeResponse.result)
 
-      alert('Backend request failed')
+    navigate("/processing")
 
-    } finally {
+  } catch (err) {
 
-      setLoading(false)
+    console.error(err)
 
-    }
+    alert("Backend request failed")
+
+  } finally {
+
+    setLoading(false)
+
   }
+}
 
   return (
     <GlassCard className="gradient-border p-5 sm:p-6">

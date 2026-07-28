@@ -113,12 +113,25 @@ def find_nearest_stations(state: GeoAgentState) -> GeoAgentState:
     origin = dict(state["origin"])
     destination = dict(state["destination"])
 
-    origin["nearest_stations"] = find_nearest_transit_hubs(origin["lat"], origin["lon"])
-    destination["nearest_stations"] = find_nearest_transit_hubs(
-        destination["lat"], destination["lon"]
-    )
+    print("Origin lat/lon:", origin["lat"], origin["lon"])
 
-    return {**state, "origin": origin, "destination": destination}
+    origin["nearest_stations"] = find_nearest_transit_hubs(
+        origin["lat"],
+        origin["lon"],
+    )
+    print("Origin stations:", origin["nearest_stations"])
+
+    destination["nearest_stations"] = find_nearest_transit_hubs(
+        destination["lat"],
+        destination["lon"],
+    )
+    print("Destination stations:", destination["nearest_stations"])
+
+    return {
+        **state,
+        "origin": origin,
+        "destination": destination,
+    }
 
 
 def route_after_geocode(state: GeoAgentState) -> str:

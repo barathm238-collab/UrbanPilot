@@ -100,13 +100,16 @@ out center tags;
             response.raise_for_status()
 
             data = response.json()
+            print(f"Server: {server}")
+            print("Elements:", len(data.get("elements", [])))
 
             elements = data.get("elements", [])
 
             if elements:
                 break
 
-        except Exception:
+        except Exception as e:
+            print(f"Server {server} failed: {e}")
             continue
 
     if not elements:
@@ -159,3 +162,101 @@ out center tags;
     stations.sort(key=lambda x: x["distance_km"])
 
     return stations[:limit]
+
+
+def find_nearest_bus_stops(
+    lat: float,
+    lon: float,
+    radius_m: int = 1500,
+    limit: int = 5,
+) -> list[dict]:
+    """
+    Returns nearby bus stops.
+
+    Output:
+    [
+        {
+            "name": "...",
+            "lat": ...,
+            "lon": ...,
+            "distance_km": ...
+        }
+    ]
+    """
+
+    query = f"""
+[out:json][timeout:20];
+(
+  node(around:{radius_m},{lat},{lon})["highway"="bus_stop"];
+  way(around:{radius_m},{lat},{lon})["highway"="bus_stop"];
+  relation(around:{radius_m},{lat},{lon})["highway"="bus_stop"];
+
+  node(around:{radius_m},{lat},{lon})["public_transport"="platform"]["bus"="yes"];
+  way(around:{radius_m},{lat},{lon})["public_transport"="platform"]["bus"="yes"];
+  relation(around:{radius_m},{lat},{lon})["public_transport"="platform"]["bus"="yes"];
+);
+out center tags;
+"""
+
+    headers = {
+        "User-Agent": "UrbanPilot/1.0 (student project)",
+        "Accept": "application/json",
+    }
+
+    elements = []
+
+    for server in OVERPASS_SERVERS:
+        try:
+            response = requests.post(
+                server,
+                data={"data": query},
+                headers=headers,
+                timeout=25,
+            )
+
+            response.raise_for_status()
+
+            elements = response.json().get("elements", [])
+
+            if elements:
+                break
+
+        except Exception:
+            continue
+
+    if not elements:
+        return []
+
+    bus_stops = []
+    seen = set()
+
+    for el in elements:
+        tags = el.get("tags", {})
+        name = tags.get("name")
+
+        if not name or name in seen:
+            continue
+
+        if "lat" in el:
+            s_lat = el["lat"]
+            s_lon = el["lon"]
+        elif "center" in el:
+            s_lat = el["center"]["lat"]
+            s_lon = el["center"]["lon"]
+        else:
+            continue
+
+        seen.add(name)
+
+        bus_stops.append(
+            {
+                "name": name,
+                "lat": s_lat,
+                "lon": s_lon,
+                "distance_km": round(haversine_km(lat, lon, s_lat, s_lon), 2),
+            }
+        )
+
+    bus_stops.sort(key=lambda x: x["distance_km"])
+
+    return bus_stops[:limit]
